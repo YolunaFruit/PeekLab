@@ -4,6 +4,7 @@ using UnityEngine;
 public struct AttemptResult
 {
     public int AttemptNumber { get; }
+    public PeekType Technique { get; }
     public float DurationSeconds { get; }
     public int ShotCount { get; }
     public bool HasVisibilityResult { get; }
@@ -17,6 +18,7 @@ public struct AttemptResult
 
     public AttemptResult(
         int attemptNumber,
+        PeekType technique,
         float durationSeconds,
         int shotCount,
         bool hasVisibilityResult,
@@ -29,6 +31,7 @@ public struct AttemptResult
     )
     {
         AttemptNumber = attemptNumber;
+        Technique = technique;
         DurationSeconds = durationSeconds;
         ShotCount = shotCount;
         HasVisibilityResult = hasVisibilityResult;
@@ -65,7 +68,10 @@ public class AttemptHistory : MonoBehaviour
         visibilityTracker = GetComponent<VisibilityTracker>();
     }
 
-    public void RecordAttempt(int attemptNumber)
+    public void RecordAttempt(
+        int attemptNumber,
+        PeekType technique
+    )
     {
         if (
             HasLatest &&
@@ -77,6 +83,7 @@ public class AttemptHistory : MonoBehaviour
 
         AttemptResult result = new AttemptResult(
             attemptNumber,
+            technique,
             recorder.LastRecordingDuration,
             recorder.ShotCount,
             visibilityTracker.HasVisibilityResult,

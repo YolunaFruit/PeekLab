@@ -9,6 +9,7 @@ public class SessionHUD : MonoBehaviour
     [SerializeField] private TMP_Text statusText;
 
     private SessionState displayedState;
+    private PeekType displayedSelection;
 
     private void Start()
     {
@@ -17,7 +18,10 @@ public class SessionHUD : MonoBehaviour
 
     private void Update()
     {
-        if (sessionController.State != displayedState)
+        if (
+            sessionController.State != displayedState ||
+            sessionController.SelectedPeekType != displayedSelection
+        )
         {
             RefreshStatus();
         }
@@ -37,12 +41,19 @@ public class SessionHUD : MonoBehaviour
     private void RefreshStatus()
     {
         displayedState = sessionController.State;
+        displayedSelection = sessionController.SelectedPeekType;
 
         switch (displayedState)
         {
             case SessionState.Ready:
                 statusText.text =
-                    "READY\nPress R to begin";
+                    "SELECT PEEK TYPE\n" +
+                    "1: Wide | 2: Slow | 3: Jiggle | 4: Custom\n" +
+                    "Selected: " +
+                    GetPeekTypeName(
+                        sessionController.SelectedPeekType
+                    ) +
+                    "\nPress R to begin";
                 break;
 
             case SessionState.Countdown:
@@ -57,14 +68,25 @@ public class SessionHUD : MonoBehaviour
                 statusText.text =
                     "ATTEMPT " +
                     sessionController.AttemptNumber +
-                    " RECORDED\n" +
-                    "P: replay | R: record again";
+                    " — " +
+                    GetPeekTypeName(
+                        sessionController.CurrentAttemptPeekType
+                    ) +
+                    "\nP: replay | R: record again\n" +
+                    "Next technique: " +
+                    GetPeekTypeName(
+                        sessionController.SelectedPeekType
+                    );
                 break;
 
             case SessionState.Replaying:
                 statusText.text =
                     "REPLAYING ATTEMPT " +
-                    sessionController.AttemptNumber;
+                    sessionController.AttemptNumber +
+                    "\nTechnique: " +
+                    GetPeekTypeName(
+                        sessionController.CurrentAttemptPeekType
+                    );
                 break;
 
             case SessionState.Results:
@@ -82,6 +104,10 @@ public class SessionHUD : MonoBehaviour
         statusText.text =
             "ATTEMPT " +
             (sessionController.AttemptNumber + 1) +
+            "\nTechnique: " +
+            GetPeekTypeName(
+                sessionController.CurrentAttemptPeekType
+            ) +
             "\nSTARTING IN " +
             secondsRemaining;
     }
@@ -91,6 +117,10 @@ public class SessionHUD : MonoBehaviour
         statusText.text =
             "RECORDING ATTEMPT " +
             sessionController.AttemptNumber +
+            "\nTechnique: " +
+            GetPeekTypeName(
+                sessionController.CurrentAttemptPeekType
+            ) +
             "\nTime: " +
             recorder.CurrentRecordingDuration.ToString("F1") +
             " s | Shots: " +
@@ -110,6 +140,8 @@ public class SessionHUD : MonoBehaviour
         string text =
             "RESULTS — ATTEMPT " +
             result.AttemptNumber +
+            "\nTechnique: " +
+            GetPeekTypeName(result.Technique) +
             "\nDuration: " +
             result.DurationSeconds.ToString("F1") +
             " s | Shots: " +
@@ -201,4 +233,26 @@ public class SessionHUD : MonoBehaviour
             text +
             "R: record again | P: replay";
     }
+
+    private string GetPeekTypeName(PeekType peekType)
+    {
+        switch (peekType)
+        {
+            case PeekType.WideSwing:
+                return "Wide Swing";
+
+            case PeekType.SlowPeek:
+                return "Slow Peek";
+
+            case PeekType.JigglePeek:
+                return "Jiggle Peek";
+
+            case PeekType.Custom:
+                return "Custom";
+
+            default:
+                return "Unknown";
+        }
+    }
+
 }

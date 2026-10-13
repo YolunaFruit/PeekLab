@@ -31,10 +31,18 @@ public class SessionController : MonoBehaviour
     public float CountdownRemaining { get; private set; }
     public int AttemptNumber { get; private set; }
 
+    public PeekType SelectedPeekType { get; private set; } =
+        PeekType.WideSwing;
+
+    public PeekType CurrentAttemptPeekType { get; private set; } =
+        PeekType.WideSwing;
+
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
     }
+
+
 
     private void Start()
     {
@@ -49,7 +57,7 @@ public class SessionController : MonoBehaviour
         {
             return;
         }
-
+        HandlePeekTypeInput();
         HandleViewInput();
         HandleStateInput();
     }
@@ -107,7 +115,10 @@ public class SessionController : MonoBehaviour
             case SessionState.Replaying:
                 if (!replay.IsReplaying)
                 {
-                    attemptHistory.RecordAttempt(AttemptNumber);
+                    attemptHistory.RecordAttempt(
+                        AttemptNumber,
+                        CurrentAttemptPeekType
+                    );
                     SetState(SessionState.Results);
                 }
                 break;
@@ -129,6 +140,7 @@ public class SessionController : MonoBehaviour
 
     private void BeginCountdown()
     {
+        CurrentAttemptPeekType = SelectedPeekType;
         replay.HideGhost();
         ResetPlayer();
         viewSwitcher.ShowPlayerView();
@@ -210,5 +222,41 @@ public class SessionController : MonoBehaviour
             : CursorLockMode.None;
 
         Cursor.visible = !controlsEnabled;
+    }
+
+    private void HandlePeekTypeInput()
+    {
+        bool canSelect =
+            state == SessionState.Ready ||
+            state == SessionState.Review ||
+            state == SessionState.Results;
+
+        if (!canSelect)
+        {
+            return;
+        }
+
+        if (Keyboard.current.digit1Key.wasPressedThisFrame)
+        {
+            SelectedPeekType = PeekType.WideSwing;
+        }
+        else if (
+            Keyboard.current.digit2Key.wasPressedThisFrame
+        )
+        {
+            SelectedPeekType = PeekType.SlowPeek;
+        }
+        else if (
+            Keyboard.current.digit3Key.wasPressedThisFrame
+        )
+        {
+            SelectedPeekType = PeekType.JigglePeek;
+        }
+        else if (
+            Keyboard.current.digit4Key.wasPressedThisFrame
+        )
+        {
+            SelectedPeekType = PeekType.Custom;
+        }
     }
 }
