@@ -12,6 +12,9 @@ PeekLab is an early Unity prototype for practicing and inspecting movement aroun
 - Randomized target appearances with reaction-time measurement
 - Player position and rotation recording
 - Smooth movement replay through a visible ghost
+- Switchable player and opponent viewpoints
+- Multi-point visibility detection for the ghost's head and shoulders
+- First-visibility and exposure-to-shot timing
 
 ## Controls
 
@@ -20,11 +23,12 @@ PeekLab is an early Unity prototype for practicing and inspecting movement aroun
 - **Left click:** Shoot
 - **R:** Start or stop movement recording
 - **P:** Replay the latest movement recording
+- **V:** Switch between player and opponent viewpoints
 - **Escape:** Release the cursor after leaving Play mode
 
 ## Project status
 
-This is an early learning prototype. The core movement recording and ghost replay loop is working. Opposing-viewpoint scenarios, replay controls, and performance summaries are planned next.
+This is an early learning prototype. The core movement recording, opponent-view replay, visibility detection, and exposure timing loop is working. Scenario controls, clearer in-game feedback, and performance summaries are planned next.
 
 ## Built with
 

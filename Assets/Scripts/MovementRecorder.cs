@@ -25,6 +25,10 @@ public class MovementRecorder : MonoBehaviour
     private readonly List<MovementFrame> frames =
         new List<MovementFrame>();
 
+    private readonly List<float> shotTimes =
+        new List<float>();
+
+    public IReadOnlyList<float> ShotTimes => shotTimes;
     private bool isRecording;
     private float recordingStartedAt;
     public IReadOnlyList<MovementFrame> Frames => frames;
@@ -44,6 +48,14 @@ public class MovementRecorder : MonoBehaviour
 
         if (isRecording)
         {
+            if (
+                Mouse.current != null &&
+                Mouse.current.leftButton.wasPressedThisFrame
+            )
+            {
+                RecordShot();
+            }
+
             RecordFrame();
         }
     }
@@ -63,6 +75,7 @@ public class MovementRecorder : MonoBehaviour
     private void StartRecording()
     {
         frames.Clear();
+        shotTimes.Clear();
         recordingStartedAt = Time.time;
         isRecording = true;
 
@@ -90,5 +103,18 @@ public class MovementRecorder : MonoBehaviour
         );
 
         frames.Add(frame);
+    }
+
+    private void RecordShot()
+    {
+        float shotTime = Time.time - recordingStartedAt;
+
+        shotTimes.Add(shotTime);
+
+        Debug.Log(
+            "Shot recorded at: " +
+            (shotTime * 1000f).ToString("F0") +
+            " ms"
+        );
     }
 }

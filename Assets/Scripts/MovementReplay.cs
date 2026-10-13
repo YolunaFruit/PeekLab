@@ -17,6 +17,11 @@ public class MovementReplay : MonoBehaviour
         ghostRenderer.enabled = false;
     }
 
+    public bool IsReplaying => isReplaying;
+
+    public float CurrentReplayTime =>
+        isReplaying ? Time.time - replayStartedAt : 0f;
+
     private void Update()
     {
         if (Keyboard.current == null)
