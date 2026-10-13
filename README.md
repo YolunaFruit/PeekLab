@@ -8,16 +8,23 @@ PeekLab is an early Unity prototype for practicing and inspecting movement aroun
 - Mouse-controlled camera pitch and player yaw
 - A simple practice scene with a wall and opposing target
 - Movement relative to the player's facing direction
+- Camera-based raycast shooting
+- Randomized target appearances with reaction-time measurement
+- Player position and rotation recording
+- Smooth movement replay through a visible ghost
 
 ## Controls
 
 - **WASD:** Move
 - **Mouse:** Look
+- **Left click:** Shoot
+- **R:** Start or stop movement recording
+- **P:** Replay the latest movement recording
 - **Escape:** Release the cursor after leaving Play mode
 
 ## Project status
 
-This is an early learning prototype. Shooting, timing, movement recording, and replay are planned but are not implemented yet.
+This is an early learning prototype. The core movement recording and ghost replay loop is working. Opposing-viewpoint scenarios, replay controls, and performance summaries are planned next.
 
 ## Built with
 
