@@ -7,6 +7,11 @@ public class VisibilityTracker : MonoBehaviour
     [SerializeField] private LayerMask obstacleLayers;
     [SerializeField] private MovementRecorder recorder;
 
+    public bool HasVisibilityResult { get; private set; }
+    public float FirstVisibleMilliseconds { get; private set; }
+    public bool HasShotAfterVisibility { get; private set; }
+    public float ExposureBeforeShotMilliseconds { get; private set; }
+
     private bool wasReplaying;
     private bool visibilityRecorded;
 
@@ -17,7 +22,7 @@ public class VisibilityTracker : MonoBehaviour
 
         if (replayJustStarted)
         {
-            visibilityRecorded = false;
+            ResetResults();
         }
 
         if (replay.IsReplaying && !visibilityRecorded)
@@ -28,113 +33,131 @@ public class VisibilityTracker : MonoBehaviour
         wasReplaying = replay.IsReplaying;
     }
 
-   private void CheckVisibility()
-   {
-       Vector3 observerPosition =
-           observerCamera.transform.position;
+    private void ResetResults()
+    {
+        visibilityRecorded = false;
+        HasVisibilityResult = false;
+        FirstVisibleMilliseconds = 0f;
+        HasShotAfterVisibility = false;
+        ExposureBeforeShotMilliseconds = 0f;
+    }
 
-       Vector3 ghostCenter =
-           replay.transform.position;
+    private void CheckVisibility()
+    {
+        Vector3 observerPosition =
+            observerCamera.transform.position;
 
-       Vector3 directionToGhost =
-           ghostCenter - observerPosition;
+        Vector3 ghostCenter =
+            replay.transform.position;
 
-       Vector3 sideDirection = Vector3.Cross(
-           Vector3.up,
-           directionToGhost
-       ).normalized;
+        Vector3 directionToGhost =
+            ghostCenter - observerPosition;
 
-       Vector3 shoulderOffset = sideDirection * 0.45f;
+        Vector3 sideDirection = Vector3.Cross(
+            Vector3.up,
+            directionToGhost
+        ).normalized;
 
-       Vector3[] samplePoints =
-       {
-           ghostCenter + Vector3.up * 0.75f,
-           ghostCenter,
-           ghostCenter + Vector3.up * 0.25f + shoulderOffset,
-           ghostCenter + Vector3.up * 0.25f - shoulderOffset
-       };
+        Vector3 shoulderOffset = sideDirection * 0.45f;
 
-       foreach (Vector3 point in samplePoints)
-       {
-           if (IsPointVisible(observerPosition, point))
-           {
-               visibilityRecorded = true;
+        Vector3[] samplePoints =
+        {
+            ghostCenter + Vector3.up * 0.75f,
+            ghostCenter,
+            ghostCenter + Vector3.up * 0.25f + shoulderOffset,
+            ghostCenter + Vector3.up * 0.25f - shoulderOffset
+        };
 
-               float visibleAtSeconds =
-                   replay.CurrentReplayTime;
+        foreach (Vector3 point in samplePoints)
+        {
+            if (IsPointVisible(observerPosition, point))
+            {
+                RecordFirstVisibility();
+                return;
+            }
+        }
+    }
 
-               float visibleAtMilliseconds =
-                   visibleAtSeconds * 1000f;
+    private bool IsPointVisible(
+        Vector3 observerPosition,
+        Vector3 point
+    )
+    {
+        Vector3 viewportPoint =
+            observerCamera.WorldToViewportPoint(point);
 
-               Debug.Log(
-                   "Ghost first visible at: " +
-                   visibleAtMilliseconds.ToString("F0") +
-                   " ms"
-               );
+        bool insideCameraView =
+            viewportPoint.z > 0f &&
+            viewportPoint.x >= 0f &&
+            viewportPoint.x <= 1f &&
+            viewportPoint.y >= 0f &&
+            viewportPoint.y <= 1f;
 
-               ReportExposureBeforeShot(visibleAtSeconds);
-               return;
-           }
-       }
-   }
+        bool blockedByObstacle = Physics.Linecast(
+            observerPosition,
+            point,
+            obstacleLayers
+        );
 
-   private bool IsPointVisible(
-       Vector3 observerPosition,
-       Vector3 point
-   )
-   {
-       Vector3 viewportPoint =
-           observerCamera.WorldToViewportPoint(point);
+        bool visible =
+            insideCameraView && !blockedByObstacle;
 
-       bool insideCameraView =
-           viewportPoint.z > 0f &&
-           viewportPoint.x >= 0f &&
-           viewportPoint.x <= 1f &&
-           viewportPoint.y >= 0f &&
-           viewportPoint.y <= 1f;
+        Debug.DrawLine(
+            observerPosition,
+            point,
+            visible ? Color.green : Color.red
+        );
 
-       bool blockedByObstacle = Physics.Linecast(
-           observerPosition,
-           point,
-           obstacleLayers
-       );
+        return visible;
+    }
 
-       bool visible =
-           insideCameraView && !blockedByObstacle;
+    private void RecordFirstVisibility()
+    {
+        visibilityRecorded = true;
+        HasVisibilityResult = true;
 
-       Debug.DrawLine(
-           observerPosition,
-           point,
-           visible ? Color.green : Color.red
-       );
+        float visibleAtSeconds =
+            replay.CurrentReplayTime;
 
-       return visible;
-   }
-   private void ReportExposureBeforeShot(
-       float visibleAtSeconds
-   )
+        FirstVisibleMilliseconds =
+            visibleAtSeconds * 1000f;
 
-   {
-       foreach (float shotTime in recorder.ShotTimes)
-       {
-           if (shotTime >= visibleAtSeconds)
-           {
-               float exposureTime =
-                   shotTime - visibleAtSeconds;
+        Debug.Log(
+            "Ghost first visible at: " +
+            FirstVisibleMilliseconds.ToString("F0") +
+            " ms"
+        );
 
-               Debug.Log(
-                   "Exposed before first shot: " +
-                   (exposureTime * 1000f).ToString("F0") +
-                   " ms"
-               );
+        RecordExposureBeforeShot(visibleAtSeconds);
+    }
 
-               return;
-           }
-       }
+    private void RecordExposureBeforeShot(
+        float visibleAtSeconds
+    )
+    {
+        foreach (float shotTime in recorder.ShotTimes)
+        {
+            if (shotTime >= visibleAtSeconds)
+            {
+                HasShotAfterVisibility = true;
 
-       Debug.Log(
-           "No shot was recorded after first visibility."
-       );
-   }
+                ExposureBeforeShotMilliseconds =
+                    (shotTime - visibleAtSeconds) * 1000f;
 
+                Debug.Log(
+                    "Exposed before first shot: " +
+                    ExposureBeforeShotMilliseconds.ToString("F0") +
+                    " ms"
+                );
+
+                return;
+            }
+        }
+
+        HasShotAfterVisibility = false;
+
+        Debug.Log(
+            "No shot was recorded after first visibility."
+        );
+    }
 }

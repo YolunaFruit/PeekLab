@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class MovementReplay : MonoBehaviour
 {
@@ -24,35 +23,30 @@ public class MovementReplay : MonoBehaviour
 
     private void Update()
     {
-        if (Keyboard.current == null)
-        {
-            return;
-        }
-
-        if (Keyboard.current.pKey.wasPressedThisFrame &&
-            !isReplaying)
-        {
-            StartReplay();
-        }
-
         if (isReplaying)
         {
             ReplayCurrentFrame();
         }
     }
 
-    private void StartReplay()
+    public void HideGhost()
     {
-        if (recorder.IsRecording)
-        {
-            Debug.Log("Stop recording before starting the replay.");
-            return;
-        }
+        isReplaying = false;
+        ghostRenderer.enabled = false;
+    }
 
-        if (recorder.Frames.Count == 0)
+    public bool HasRecording =>
+        recorder.Frames.Count > 0;
+
+    public bool StartReplay()
+    {
+        if (
+            isReplaying ||
+            recorder.IsRecording ||
+            !HasRecording
+        )
         {
-            Debug.Log("There is no movement recording yet.");
-            return;
+            return false;
         }
 
         frameIndex = 0;
@@ -61,6 +55,7 @@ public class MovementReplay : MonoBehaviour
         ghostRenderer.enabled = true;
 
         Debug.Log("Movement replay started.");
+        return true;
     }
 
     private void ReplayCurrentFrame()

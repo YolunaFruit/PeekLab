@@ -28,62 +28,66 @@ public class MovementRecorder : MonoBehaviour
     private readonly List<float> shotTimes =
         new List<float>();
 
-    public IReadOnlyList<float> ShotTimes => shotTimes;
     private bool isRecording;
     private float recordingStartedAt;
+
     public IReadOnlyList<MovementFrame> Frames => frames;
+    public IReadOnlyList<float> ShotTimes => shotTimes;
     public bool IsRecording => isRecording;
+    public int ShotCount => shotTimes.Count;
+
+    public float LastRecordingDuration { get; private set; }
+
+    public float CurrentRecordingDuration =>
+        isRecording
+            ? Time.time - recordingStartedAt
+            : LastRecordingDuration;
 
     private void Update()
     {
-        if (Keyboard.current == null)
+        if (!isRecording)
         {
             return;
         }
 
-        if (Keyboard.current.rKey.wasPressedThisFrame)
+        if (
+            Mouse.current != null &&
+            Mouse.current.leftButton.wasPressedThisFrame
+        )
         {
-            ToggleRecording();
+            RecordShot();
         }
 
-        if (isRecording)
-        {
-            if (
-                Mouse.current != null &&
-                Mouse.current.leftButton.wasPressedThisFrame
-            )
-            {
-                RecordShot();
-            }
-
-            RecordFrame();
-        }
+        RecordFrame();
     }
 
-    private void ToggleRecording()
+    public void StartRecording()
     {
         if (isRecording)
         {
-            StopRecording();
+            return;
         }
-        else
-        {
-            StartRecording();
-        }
-    }
 
-    private void StartRecording()
-    {
         frames.Clear();
         shotTimes.Clear();
+
+        LastRecordingDuration = 0f;
         recordingStartedAt = Time.time;
         isRecording = true;
 
         Debug.Log("Movement recording started.");
     }
 
-    private void StopRecording()
+    public void StopRecording()
     {
+        if (!isRecording)
+        {
+            return;
+        }
+
+        LastRecordingDuration =
+            Time.time - recordingStartedAt;
+
         isRecording = false;
 
         Debug.Log(
@@ -94,7 +98,8 @@ public class MovementRecorder : MonoBehaviour
 
     private void RecordFrame()
     {
-        float elapsedTime = Time.time - recordingStartedAt;
+        float elapsedTime =
+            Time.time - recordingStartedAt;
 
         MovementFrame frame = new MovementFrame(
             transform.position,
@@ -107,7 +112,8 @@ public class MovementRecorder : MonoBehaviour
 
     private void RecordShot()
     {
-        float shotTime = Time.time - recordingStartedAt;
+        float shotTime =
+            Time.time - recordingStartedAt;
 
         shotTimes.Add(shotTime);
 

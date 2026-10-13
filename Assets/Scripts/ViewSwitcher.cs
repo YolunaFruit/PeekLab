@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class ViewSwitcher : MonoBehaviour
 {
@@ -11,38 +10,37 @@ public class ViewSwitcher : MonoBehaviour
 
     private void Start()
     {
-        playerCamera.SetActive(true);
-        playerRenderer.enabled = true;
-        opponentCamera.SetActive(false);
+        ShowPlayerView();
     }
 
-    private void Update()
+    public void ShowPlayerView()
     {
-        if (Keyboard.current == null)
-        {
-            return;
-        }
-
-        if (Keyboard.current.vKey.wasPressedThisFrame)
-        {
-            ToggleView();
-        }
+        showingOpponentView = false;
+        ApplyView();
     }
 
-    private void ToggleView()
+    public void ShowOpponentView()
+    {
+        showingOpponentView = true;
+        ApplyView();
+    }
+
+    public void ToggleView()
     {
         showingOpponentView = !showingOpponentView;
-        playerRenderer.enabled = !showingOpponentView;
+        ApplyView();
+    }
+
+    private void ApplyView()
+    {
         playerCamera.SetActive(!showingOpponentView);
         opponentCamera.SetActive(showingOpponentView);
+        playerRenderer.enabled = !showingOpponentView;
 
-        if (showingOpponentView)
-        {
-            Debug.Log("Opponent view");
-        }
-        else
-        {
-            Debug.Log("Player view");
-        }
+        Debug.Log(
+            showingOpponentView
+                ? "Opponent view"
+                : "Player view"
+        );
     }
 }

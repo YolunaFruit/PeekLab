@@ -32,4 +32,10 @@ public class MouseLook : MonoBehaviour
         transform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
         playerBody.Rotate(Vector3.up * yawChange);
     }
+
+    public void ResetLook()
+    {
+        pitch = 0f;
+        transform.localRotation = Quaternion.identity;
+    }
 }
