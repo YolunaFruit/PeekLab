@@ -155,6 +155,7 @@ public class SessionController : MonoBehaviour
         CountdownRemaining = 0f;
         AttemptNumber++;
 
+        playerMovement.ResetMovementState();
         SetPlayerControls(true);
         recorder.StartRecording();
         SetState(SessionState.Recording);

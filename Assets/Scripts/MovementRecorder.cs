@@ -20,21 +20,52 @@ public struct MovementFrame
     }
 }
 
+public struct ShotSample
+{
+    public float Time { get; }
+    public float MovementSpeed { get; }
+    public bool WasStable { get; }
+    public float StoppedForMilliseconds { get; }
+
+    public ShotSample(
+        float time,
+        float movementSpeed,
+        bool wasStable,
+        float stoppedForMilliseconds
+    )
+    {
+        Time = time;
+        MovementSpeed = movementSpeed;
+        WasStable = wasStable;
+        StoppedForMilliseconds =
+            stoppedForMilliseconds;
+    }
+}
+
 public class MovementRecorder : MonoBehaviour
 {
     private readonly List<MovementFrame> frames =
         new List<MovementFrame>();
 
-    private readonly List<float> shotTimes =
-        new List<float>();
+    private readonly List<ShotSample> shots =
+        new List<ShotSample>();
 
     private bool isRecording;
     private float recordingStartedAt;
 
     public IReadOnlyList<MovementFrame> Frames => frames;
-    public IReadOnlyList<float> ShotTimes => shotTimes;
     public bool IsRecording => isRecording;
-    public int ShotCount => shotTimes.Count;
+
+
+    public IReadOnlyList<ShotSample> Shots => shots; // shoot
+    public int ShotCount => shots.Count;
+
+    private PlayerMovement playerMovement;
+
+    private void Awake()
+    {
+        playerMovement = GetComponent<PlayerMovement>();
+    }
 
     public float LastRecordingDuration { get; private set; }
 
@@ -69,7 +100,7 @@ public class MovementRecorder : MonoBehaviour
         }
 
         frames.Clear();
-        shotTimes.Clear();
+        shots.Clear();
 
         LastRecordingDuration = 0f;
         recordingStartedAt = Time.time;
@@ -115,12 +146,26 @@ public class MovementRecorder : MonoBehaviour
         float shotTime =
             Time.time - recordingStartedAt;
 
-        shotTimes.Add(shotTime);
+        bool wasStable =
+            !playerMovement.IsMoving;
+
+        float stoppedForMilliseconds =
+            playerMovement.StoppedDurationSeconds * 1000f;
+
+        ShotSample shot = new ShotSample(
+            shotTime,
+            playerMovement.CurrentHorizontalSpeed,
+            wasStable,
+            stoppedForMilliseconds
+        );
+
+        shots.Add(shot);
 
         Debug.Log(
             "Shot recorded at: " +
             (shotTime * 1000f).ToString("F0") +
-            " ms"
+            " ms | Stable: " +
+            wasStable
         );
     }
 }

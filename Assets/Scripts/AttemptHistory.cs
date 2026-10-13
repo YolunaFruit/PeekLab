@@ -11,6 +11,10 @@ public struct AttemptResult
     public bool HasShotAfterVisibility { get; }
     public float ExposureMilliseconds { get; }
 
+    public bool ShotWasStable { get; }
+    public float ShotMovementSpeed { get; }
+    public float StoppedBeforeShotMilliseconds { get; }
+
     public AttemptResult(
         int attemptNumber,
         float durationSeconds,
@@ -18,7 +22,10 @@ public struct AttemptResult
         bool hasVisibilityResult,
         float firstVisibleMilliseconds,
         bool hasShotAfterVisibility,
-        float exposureMilliseconds
+        float exposureMilliseconds,
+        bool shotWasStable,
+        float shotMovementSpeed,
+        float stoppedBeforeShotMilliseconds
     )
     {
         AttemptNumber = attemptNumber;
@@ -28,6 +35,10 @@ public struct AttemptResult
         FirstVisibleMilliseconds = firstVisibleMilliseconds;
         HasShotAfterVisibility = hasShotAfterVisibility;
         ExposureMilliseconds = exposureMilliseconds;
+        ShotWasStable = shotWasStable;
+        ShotMovementSpeed = shotMovementSpeed;
+        StoppedBeforeShotMilliseconds =
+        stoppedBeforeShotMilliseconds;
     }
 }
 
@@ -71,7 +82,10 @@ public class AttemptHistory : MonoBehaviour
             visibilityTracker.HasVisibilityResult,
             visibilityTracker.FirstVisibleMilliseconds,
             visibilityTracker.HasShotAfterVisibility,
-            visibilityTracker.ExposureBeforeShotMilliseconds
+            visibilityTracker.ExposureBeforeShotMilliseconds,
+            visibilityTracker.ShotWasStable,
+            visibilityTracker.ShotMovementSpeed,
+            visibilityTracker.StoppedBeforeShotMilliseconds
         );
 
         attempts.Add(result);

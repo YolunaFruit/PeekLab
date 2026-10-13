@@ -130,17 +130,34 @@ public class SessionHUD : MonoBehaviour
             " ms\n";
 
         if (!result.HasShotAfterVisibility)
-        {
-            return
-                text +
-                "No shot after becoming visible\n" +
-                "R: record again | P: replay";
+            {
+                return
+                    text +
+                    "No shot after becoming visible\n" +
+                    "R: record again | P: replay";
         }
 
         text +=
             "Exposure before shot: " +
             result.ExposureMilliseconds.ToString("F0") +
             " ms\n";
+
+        if (result.ShotWasStable) {
+            text +=
+                "Shot stability: STABLE\n" +
+                "Stopped before shot: " +
+                result.StoppedBeforeShotMilliseconds
+                    .ToString("F0") +
+                " ms\n";
+        }
+        else
+        {
+            text +=
+                "Shot stability: MOVING\n" +
+                "Movement speed: " +
+                result.ShotMovementSpeed.ToString("F1") +
+                " units/s\n";
+        }
 
         if (
             attemptHistory.TryGetPreviousExposure(

@@ -15,6 +15,15 @@ public class VisibilityTracker : MonoBehaviour
     private bool wasReplaying;
     private bool visibilityRecorded;
 
+    public bool ShotWasStable { get; private set; }
+    public float ShotMovementSpeed { get; private set; }
+
+    public float StoppedBeforeShotMilliseconds
+    {
+        get;
+        private set;
+    }
+
     private void Update()
     {
         bool replayJustStarted =
@@ -40,6 +49,9 @@ public class VisibilityTracker : MonoBehaviour
         FirstVisibleMilliseconds = 0f;
         HasShotAfterVisibility = false;
         ExposureBeforeShotMilliseconds = 0f;
+        ShotWasStable = false;
+        ShotMovementSpeed = 0f;
+        StoppedBeforeShotMilliseconds = 0f;
     }
 
     private void CheckVisibility()
@@ -134,20 +146,28 @@ public class VisibilityTracker : MonoBehaviour
     private void RecordExposureBeforeShot(
         float visibleAtSeconds
     )
+
     {
-        foreach (float shotTime in recorder.ShotTimes)
+        foreach (ShotSample shot in recorder.Shots)
         {
-            if (shotTime >= visibleAtSeconds)
+            if (shot.Time >= visibleAtSeconds)
             {
                 HasShotAfterVisibility = true;
 
                 ExposureBeforeShotMilliseconds =
-                    (shotTime - visibleAtSeconds) * 1000f;
+                    (shot.Time - visibleAtSeconds) * 1000f;
+
+                ShotWasStable = shot.WasStable;
+                ShotMovementSpeed = shot.MovementSpeed;
+
+                StoppedBeforeShotMilliseconds =
+                    shot.StoppedForMilliseconds;
 
                 Debug.Log(
                     "Exposed before first shot: " +
                     ExposureBeforeShotMilliseconds.ToString("F0") +
-                    " ms"
+                    " ms | Stable: " +
+                    ShotWasStable
                 );
 
                 return;
@@ -161,3 +181,7 @@ public class VisibilityTracker : MonoBehaviour
         );
     }
 }
+
+
+
+
