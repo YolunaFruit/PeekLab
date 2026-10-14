@@ -2,6 +2,14 @@
 
 PeekLab is a Unity prototype for practicing and inspecting movement around cover in a first-person environment. Record a peek, replay it from an opponent's viewpoint, and compare how quickly the movement becomes visible with how stable the first shot was.
 
+## Demo
+
+[![Watch PeekLab Demo 1](Demos/Demo-01_2026-10-13/preview.svg)](Demos/Demo-01_2026-10-13/PeekLab-Demo-01.mp4)
+
+**[Watch Demo 1 — Corner Peek Prototype](Demos/Demo-01_2026-10-13/PeekLab-Demo-01.mp4)** · Recorded October 13, 2026
+
+Browse the [demo archive](Demos/) to follow the prototype's progress.
+
 ## Current prototype
 
 - First-person movement with collision and mouse look
@@ -38,10 +46,11 @@ PeekLab is a Unity prototype for practicing and inspecting movement around cover
 | Repeatable training sessions | Added session states, countdowns, input locking, results, and attempt comparisons. | [`88094ce`](https://github.com/YolunaFruit/PeekLab/commit/88094ce) |
 | Shot stability analysis | Added movement speed and stop-before-shot measurements. | [`8861f97`](https://github.com/YolunaFruit/PeekLab/commit/8861f97) |
 | Technique comparison | Added selectable peek labels and saved each technique with its result. | [`7a58830`](https://github.com/YolunaFruit/PeekLab/commit/7a58830) |
+| Playable corner scenario | Added an L-shaped practice route, clearer HUD, crosshair, target styling, and replay-ghost styling. | [fcbb971](https://github.com/YolunaFruit/PeekLab/commit/fcbb971) |
 
 ## Project status
 
-The core training loop works: select a technique, record a peek, inspect it from the opponent's view, and review timing and shot-stability results. The next milestone focuses on visual clarity, followed by real slow-walk and crouch movement.
+The core training loop and first corner scenario work end to end. The next milestone will refine the environment and add real slow-walk and crouch movement.
 
 ## Built with
 
