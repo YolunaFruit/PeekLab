@@ -4,11 +4,11 @@ PeekLab is a Unity prototype for practicing and inspecting movement around cover
 
 ## Demo
 
-[![Watch PeekLab Demo 1](Demos/Demo-01_2026-10-13/preview.svg)](Demos/Demo-01_2026-10-13/PeekLab-Demo-01.mp4)
+[![Watch PeekLab Demo 1](Demos/Demo-01_2026-10-13/preview.gif)](Demos/Demo-01_2026-10-13/PeekLab-Demo-01.mp4)
 
 **[Watch Demo 1 — Corner Peek Prototype](Demos/Demo-01_2026-10-13/PeekLab-Demo-01.mp4)** · Recorded October 13, 2026
 
-Browse the [demo archive](Demos/) to follow the prototype's progress.
+The animated preview plays directly above. Open the full MP4 for the complete recording, or browse the [demo archive](Demos/) to follow the prototype's progress.
 
 ## Current prototype
 

@@ -2,7 +2,9 @@
 
 **Recorded:** October 13, 2026
 
-[Watch the MP4](PeekLab-Demo-01.mp4)
+![Animated gameplay preview](preview.gif)
+
+[Watch the complete MP4](PeekLab-Demo-01.mp4)
 
 This recording demonstrates the first playable corner scenario:
 
