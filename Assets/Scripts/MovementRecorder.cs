@@ -20,28 +20,6 @@ public struct MovementFrame
     }
 }
 
-public struct ShotSample
-{
-    public float Time { get; }
-    public float MovementSpeed { get; }
-    public bool WasStable { get; }
-    public float StoppedForMilliseconds { get; }
-
-    public ShotSample(
-        float time,
-        float movementSpeed,
-        bool wasStable,
-        float stoppedForMilliseconds
-    )
-    {
-        Time = time;
-        MovementSpeed = movementSpeed;
-        WasStable = wasStable;
-        StoppedForMilliseconds =
-            stoppedForMilliseconds;
-    }
-}
-
 public class MovementRecorder : MonoBehaviour
 {
     private readonly List<MovementFrame> frames =
@@ -57,7 +35,7 @@ public class MovementRecorder : MonoBehaviour
     public bool IsRecording => isRecording;
 
 
-    public IReadOnlyList<ShotSample> Shots => shots; // shoot
+    public IReadOnlyList<ShotSample> Shots => shots;
     public int ShotCount => shots.Count;
 
     private PlayerMovement playerMovement;

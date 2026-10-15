@@ -146,32 +146,33 @@ public class VisibilityTracker : MonoBehaviour
     private void RecordExposureBeforeShot(
         float visibleAtSeconds
     )
-
     {
-        foreach (ShotSample shot in recorder.Shots)
+        bool foundEligibleShot =
+            ExposureTimingCalculator.TryCalculate(
+                HasVisibilityResult,
+                visibleAtSeconds,
+                recorder.Shots,
+                out ExposureTimingResult result
+            );
+
+        if (foundEligibleShot)
         {
-            if (shot.Time >= visibleAtSeconds)
-            {
-                HasShotAfterVisibility = true;
+            HasShotAfterVisibility = true;
+            ExposureBeforeShotMilliseconds =
+                result.ExposureMilliseconds;
+            ShotWasStable = result.Shot.WasStable;
+            ShotMovementSpeed = result.Shot.MovementSpeed;
+            StoppedBeforeShotMilliseconds =
+                result.Shot.StoppedForMilliseconds;
 
-                ExposureBeforeShotMilliseconds =
-                    (shot.Time - visibleAtSeconds) * 1000f;
+            Debug.Log(
+                "Exposed before first shot: " +
+                ExposureBeforeShotMilliseconds.ToString("F0") +
+                " ms | Stable: " +
+                ShotWasStable
+            );
 
-                ShotWasStable = shot.WasStable;
-                ShotMovementSpeed = shot.MovementSpeed;
-
-                StoppedBeforeShotMilliseconds =
-                    shot.StoppedForMilliseconds;
-
-                Debug.Log(
-                    "Exposed before first shot: " +
-                    ExposureBeforeShotMilliseconds.ToString("F0") +
-                    " ms | Stable: " +
-                    ShotWasStable
-                );
-
-                return;
-            }
+            return;
         }
 
         HasShotAfterVisibility = false;
