@@ -1,5 +1,7 @@
 # PeekLab
 
+[![Analytics Tests](https://github.com/YolunaFruit/PeekLab/actions/workflows/analytics-tests.yml/badge.svg)](https://github.com/YolunaFruit/PeekLab/actions/workflows/analytics-tests.yml)
+
 PeekLab is a Unity prototype for practicing and inspecting movement around cover in a first-person environment. Record a peek, replay it from an opponent's viewpoint, and compare how quickly the movement becomes visible with how stable the first shot was.
 
 ## Demo
@@ -58,7 +60,8 @@ These values are prototype feedback sampled during Unity frame updates. They are
 
 - The current demo shows the complete record, review, replay, and results flow running in the Unity Editor.
 - Seven Unity EditMode tests verify exposure timing, eligible-shot selection, no-result cases, and the selected shot's movement data.
-- Camera visibility, obstacle handling, and the complete scene flow still require manual verification. The repository does not yet contain a CI workflow.
+- GitHub Actions compiles the shared analytics source and runs the same seven tests on every push to `main` and on pull requests.
+- Continuous integration covers the pure exposure calculation. Camera visibility, obstacle handling, and the complete Unity scene flow still require manual verification.
 - Visibility uses four sample points on a capsule rather than an animated character model.
 - Attempt history lasts only for the current play session.
 - Peek selections label attempts for comparison; they do not yet change movement behavior.
@@ -87,10 +90,11 @@ Open **Window → General → Test Runner**, select **EditMode**, and run all te
 | Technique comparison | Added selectable peek labels and saved each technique with its result. | [`7a58830`](https://github.com/YolunaFruit/PeekLab/commit/7a58830) |
 | Playable corner scenario | Added an L-shaped practice route, clearer HUD, crosshair, target styling, and replay-ghost styling. | [fcbb971](https://github.com/YolunaFruit/PeekLab/commit/fcbb971) |
 | Verified exposure calculation | Separated exposure selection from Unity's frame loop and added seven passing EditMode tests. | [`b974f48`](https://github.com/YolunaFruit/PeekLab/commit/b974f48) |
+| Continuous integration | Added GitHub Actions to compile the shared analytics source and run all seven tests on pushes and pull requests. | [`b75ebe8`](https://github.com/YolunaFruit/PeekLab/commit/b75ebe8) |
 
 ## Project status
 
-The core training loop and first corner scenario work end to end. Exposure selection is now covered by automated EditMode tests. The next quality milestone is to verify the affected scene flow manually and then run the test suite through continuous integration. Slow-walk, crouch movement, and environment polish can follow after the core measurement workflow is verified.
+The core training loop and first corner scenario work end to end. Exposure selection is covered by seven automated tests locally and in GitHub Actions. The next quality milestone is to verify the affected scene flow manually, then expand integration coverage around recording and replay. Slow-walk, crouch movement, and environment polish can follow after the core measurement workflow is verified.
 
 ## Built with
 
