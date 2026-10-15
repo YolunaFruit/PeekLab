@@ -61,7 +61,7 @@ These values are prototype feedback sampled during Unity frame updates. They are
 - The current demo shows the complete record, review, replay, and results flow running in the Unity Editor.
 - Fifteen Unity EditMode tests verify exposure timing, eligible-shot selection, replay interpolation boundaries, and no-result cases.
 - GitHub Actions compiles the shared analytics source and runs the same fifteen tests on every push to `main` and on pull requests.
-- Continuous integration covers the pure exposure calculation. Camera visibility, obstacle handling, and the complete Unity scene flow still require manual verification.
+- Continuous integration covers the pure exposure and replay-timeline calculations. Camera visibility, obstacle handling, and the complete Unity scene flow still require manual verification.
 - Visibility uses four sample points on a capsule rather than an animated character model.
 - Attempt history lasts only for the current play session.
 - Peek selections label attempts for comparison; they do not yet change movement behavior.
