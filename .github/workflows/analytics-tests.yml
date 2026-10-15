@@ -1,0 +1,38 @@
+name: Analytics Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Run exposure calculation tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore test dependencies
+        run: >-
+          dotnet restore
+          Tools/PeekLab.Analytics.Tests/PeekLab.Analytics.Tests.csproj
+          --configfile Tools/NuGet.Config
+
+      - name: Run analytics tests
+        run: >-
+          dotnet test
+          Tools/PeekLab.Analytics.Tests/PeekLab.Analytics.Tests.csproj
+          --configuration Release
+          --no-restore
+          --verbosity normal
