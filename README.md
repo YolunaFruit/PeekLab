@@ -59,8 +59,8 @@ These values are prototype feedback sampled during Unity frame updates. They are
 ## Verification status and limitations
 
 - The current demo shows the complete record, review, replay, and results flow running in the Unity Editor.
-- Seven Unity EditMode tests verify exposure timing, eligible-shot selection, no-result cases, and the selected shot's movement data.
-- GitHub Actions compiles the shared analytics source and runs the same seven tests on every push to `main` and on pull requests.
+- Fifteen Unity EditMode tests verify exposure timing, eligible-shot selection, replay interpolation boundaries, and no-result cases.
+- GitHub Actions compiles the shared analytics source and runs the same fifteen tests on every push to `main` and on pull requests.
 - Continuous integration covers the pure exposure calculation. Camera visibility, obstacle handling, and the complete Unity scene flow still require manual verification.
 - Visibility uses four sample points on a capsule rather than an animated character model.
 - Attempt history lasts only for the current play session.
@@ -69,7 +69,9 @@ These values are prototype feedback sampled during Unity frame updates. They are
 
 ## Automated tests
 
-Open **Window → General → Test Runner**, select **EditMode**, and run all tests. The current suite covers the pure exposure calculation separately from Unity's frame updates:
+Open **Window → General → Test Runner**, select **EditMode**, and run all tests. The current suite covers the pure exposure and replay-timeline calculations separately from Unity's frame updates.
+
+Exposure tests:
 
 - Select the earliest shot at or after first visibility
 - Ignore shots recorded before visibility
@@ -77,6 +79,13 @@ Open **Window → General → Test Runner**, select **EditMode**, and run all te
 - Return no result when no eligible shot exists
 - Keep missing visibility distinct from visibility at time zero
 - Return movement and stability data from the selected shot
+
+Replay-timeline tests:
+
+- Handle empty and one-frame recordings safely
+- Clamp replay before the first frame and finish on the last frame
+- Interpolate across regular and irregular frame spacing
+- Select the correct segment at exact and duplicate timestamps
 
 ## Development updates
 
@@ -91,10 +100,11 @@ Open **Window → General → Test Runner**, select **EditMode**, and run all te
 | Playable corner scenario | Added an L-shaped practice route, clearer HUD, crosshair, target styling, and replay-ghost styling. | [fcbb971](https://github.com/YolunaFruit/PeekLab/commit/fcbb971) |
 | Verified exposure calculation | Separated exposure selection from Unity's frame loop and added seven passing EditMode tests. | [`b974f48`](https://github.com/YolunaFruit/PeekLab/commit/b974f48) |
 | Continuous integration | Added GitHub Actions to compile the shared analytics source and run all seven tests on pushes and pull requests. | [`b75ebe8`](https://github.com/YolunaFruit/PeekLab/commit/b75ebe8) |
+| Verified replay timeline | Extracted replay frame selection and added eight tests for interpolation and recording boundaries. | [`5f363c1`](https://github.com/YolunaFruit/PeekLab/commit/5f363c1) |
 
 ## Project status
 
-The core training loop and first corner scenario work end to end. Exposure selection is covered by seven automated tests locally and in GitHub Actions. The next quality milestone is to verify the affected scene flow manually, then expand integration coverage around recording and replay. Slow-walk, crouch movement, and environment polish can follow after the core measurement workflow is verified.
+The core training loop and first corner scenario work end to end. Exposure selection and replay timing are covered by fifteen automated tests locally and in GitHub Actions. The next quality milestone is to verify the affected scene flow manually, then expand integration coverage around recording and replay. Slow-walk, crouch movement, and environment polish can follow after the core measurement workflow is verified.
 
 ## Built with
 
