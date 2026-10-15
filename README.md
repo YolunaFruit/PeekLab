@@ -57,11 +57,23 @@ These values are prototype feedback sampled during Unity frame updates. They are
 ## Verification status and limitations
 
 - The current demo shows the complete record, review, replay, and results flow running in the Unity Editor.
-- Testing is currently manual; the repository does not yet contain automated tests or a CI workflow.
+- Seven Unity EditMode tests verify exposure timing, eligible-shot selection, no-result cases, and the selected shot's movement data.
+- Camera visibility, obstacle handling, and the complete scene flow still require manual verification. The repository does not yet contain a CI workflow.
 - Visibility uses four sample points on a capsule rather than an animated character model.
 - Attempt history lasts only for the current play session.
 - Peek selections label attempts for comparison; they do not yet change movement behavior.
 - The project currently contains one prototype corner scenario and uses Unity primitive geometry.
+
+## Automated tests
+
+Open **Window → General → Test Runner**, select **EditMode**, and run all tests. The current suite covers the pure exposure calculation separately from Unity's frame updates:
+
+- Select the earliest shot at or after first visibility
+- Ignore shots recorded before visibility
+- Treat a shot at the exact visibility time as zero exposure
+- Return no result when no eligible shot exists
+- Keep missing visibility distinct from visibility at time zero
+- Return movement and stability data from the selected shot
 
 ## Development updates
 
@@ -74,10 +86,11 @@ These values are prototype feedback sampled during Unity frame updates. They are
 | Shot stability analysis | Added movement speed and stop-before-shot measurements. | [`8861f97`](https://github.com/YolunaFruit/PeekLab/commit/8861f97) |
 | Technique comparison | Added selectable peek labels and saved each technique with its result. | [`7a58830`](https://github.com/YolunaFruit/PeekLab/commit/7a58830) |
 | Playable corner scenario | Added an L-shaped practice route, clearer HUD, crosshair, target styling, and replay-ghost styling. | [fcbb971](https://github.com/YolunaFruit/PeekLab/commit/fcbb971) |
+| Verified exposure calculation | Separated exposure selection from Unity's frame loop and added seven passing EditMode tests. | [`b974f48`](https://github.com/YolunaFruit/PeekLab/commit/b974f48) |
 
 ## Project status
 
-The core training loop and first corner scenario work end to end. The next engineering milestone is to separate the exposure calculation from Unity's frame loop and cover its edge cases with automated tests. Slow-walk, crouch movement, and environment polish can follow after the core measurement is verified.
+The core training loop and first corner scenario work end to end. Exposure selection is now covered by automated EditMode tests. The next quality milestone is to verify the affected scene flow manually and then run the test suite through continuous integration. Slow-walk, crouch movement, and environment polish can follow after the core measurement workflow is verified.
 
 ## Built with
 
