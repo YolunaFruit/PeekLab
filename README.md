@@ -36,6 +36,33 @@ The animated preview plays directly above. Open the full MP4 for the complete re
 - **V:** Switch between player and opponent viewpoints
 - **Escape:** Release the cursor
 
+## Run the prototype
+
+1. Install Unity **6000.6.4f1** through Unity Hub.
+2. Clone this repository and add its root folder as a Unity project.
+3. Open `Assets/Scenes/SampleScene.unity`.
+4. Press Play, select a peek label with **1-4**, and press **R** to begin an attempt.
+
+The training flow is **countdown → record → review → replay → results**. After recording, use **V** to inspect the opponent view and **P** to replay the recorded movement. Press **R** from the results screen to start another attempt.
+
+## How the feedback works
+
+- **First visible** is the replay time when one of the ghost's sampled head or shoulder points is inside the opponent camera and is not blocked by an obstacle.
+- **Exposure before shot** is the time between first visibility and the first recorded shot at or after that moment.
+- **Stable shot** reports whether the player was stationary when that shot was recorded. The result also includes movement speed and how long the player had been stopped.
+- **Best exposure** is the lowest valid exposure time from the current play session.
+
+These values are prototype feedback sampled during Unity frame updates. They are useful for comparing attempts in the same scenario, but they are not a validated measurement of VALORANT movement, networking, or real-world player improvement.
+
+## Verification status and limitations
+
+- The current demo shows the complete record, review, replay, and results flow running in the Unity Editor.
+- Testing is currently manual; the repository does not yet contain automated tests or a CI workflow.
+- Visibility uses four sample points on a capsule rather than an animated character model.
+- Attempt history lasts only for the current play session.
+- Peek selections label attempts for comparison; they do not yet change movement behavior.
+- The project currently contains one prototype corner scenario and uses Unity primitive geometry.
+
 ## Development updates
 
 | Milestone | What changed | Commit |
@@ -50,7 +77,7 @@ The animated preview plays directly above. Open the full MP4 for the complete re
 
 ## Project status
 
-The core training loop and first corner scenario work end to end. The next milestone will refine the environment and add real slow-walk and crouch movement.
+The core training loop and first corner scenario work end to end. The next engineering milestone is to separate the exposure calculation from Unity's frame loop and cover its edge cases with automated tests. Slow-walk, crouch movement, and environment polish can follow after the core measurement is verified.
 
 ## Built with
 
