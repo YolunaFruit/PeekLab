@@ -9,6 +9,7 @@
 [Uu]ser[Ss]ettings/
 [Mm]emoryCaptures/
 [Rr]ecordings/
+TestResults*.xml
 
 # IDE-generated files
 .idea/

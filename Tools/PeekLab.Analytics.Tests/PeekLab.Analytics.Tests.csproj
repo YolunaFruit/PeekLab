@@ -21,8 +21,8 @@
       Link="Analytics/%(Filename)%(Extension)"
     />
     <Compile
-      Include="../../Assets/Tests/EditMode/ExposureTimingCalculatorTests.cs"
-      Link="Tests/ExposureTimingCalculatorTests.cs"
+      Include="../../Assets/Tests/EditMode/*.cs"
+      Link="Tests/%(Filename)%(Extension)"
     />
   </ItemGroup>
 </Project>

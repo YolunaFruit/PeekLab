@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MovementReplay : MonoBehaviour
@@ -5,10 +6,10 @@ public class MovementReplay : MonoBehaviour
     [SerializeField] private MovementRecorder recorder;
 
     private Renderer ghostRenderer;
+    private readonly List<float> frameTimes = new List<float>();
 
     private bool isReplaying;
     private float replayStartedAt;
-    private int frameIndex;
 
     private void Awake()
     {
@@ -49,7 +50,7 @@ public class MovementReplay : MonoBehaviour
             return false;
         }
 
-        frameIndex = 0;
+        CacheFrameTimes();
         replayStartedAt = Time.time;
         isReplaying = true;
         ghostRenderer.enabled = true;
@@ -61,20 +62,23 @@ public class MovementReplay : MonoBehaviour
     private void ReplayCurrentFrame()
     {
         float replayTime = Time.time - replayStartedAt;
-        int lastFrameIndex = recorder.Frames.Count - 1;
 
-        while (
-            frameIndex < lastFrameIndex - 1 &&
-            recorder.Frames[frameIndex + 1].time <= replayTime
-        )
+        bool foundSegment = ReplayTimelineCalculator.TryCalculate(
+            frameTimes,
+            replayTime,
+            out ReplaySegment segment
+        );
+
+        if (!foundSegment)
         {
-            frameIndex++;
+            HideGhost();
+            return;
         }
 
-        if (replayTime >= recorder.Frames[lastFrameIndex].time)
+        if (segment.IsFinished)
         {
             MovementFrame lastFrame =
-                recorder.Frames[lastFrameIndex];
+                recorder.Frames[segment.FromIndex];
 
             transform.SetPositionAndRotation(
                 lastFrame.position,
@@ -87,32 +91,36 @@ public class MovementReplay : MonoBehaviour
         }
 
         MovementFrame currentFrame =
-            recorder.Frames[frameIndex];
+            recorder.Frames[segment.FromIndex];
 
         MovementFrame nextFrame =
-            recorder.Frames[frameIndex + 1];
-
-        float interpolationAmount = Mathf.InverseLerp(
-            currentFrame.time,
-            nextFrame.time,
-            replayTime
-        );
+            recorder.Frames[segment.ToIndex];
 
         Vector3 smoothPosition = Vector3.Lerp(
             currentFrame.position,
             nextFrame.position,
-            interpolationAmount
+            segment.InterpolationAmount
         );
 
         Quaternion smoothRotation = Quaternion.Slerp(
             currentFrame.rotation,
             nextFrame.rotation,
-            interpolationAmount
+            segment.InterpolationAmount
         );
 
         transform.SetPositionAndRotation(
             smoothPosition,
             smoothRotation
         );
+    }
+
+    private void CacheFrameTimes()
+    {
+        frameTimes.Clear();
+
+        foreach (MovementFrame frame in recorder.Frames)
+        {
+            frameTimes.Add(frame.time);
+        }
     }
 }
